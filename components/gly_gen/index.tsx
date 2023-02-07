@@ -3,6 +3,7 @@ import { MetaNode } from '@/spec/metanode'
 import { GeneInfo } from '../service/mygeneinfo'
 import { GlycanTerm } from '@/components/core/input/term'
 import { z } from 'zod'
+import { Gene } from '../core/input/primitives'
 
 export const GlyGenResponse = z.object({
   queryinfo: z.object({
@@ -70,7 +71,14 @@ export const GlycanResponse = z.object({
     common_name: z.string(),
     name: z.string(),
     taxid: z.number(),
-    annotation_category: z.string(),
+    annotation_category: z.string()
+  })),
+  enzyme: z.array(z.object({
+    uniprot_canonical_ac: z.string(),
+    gene_link: z.string(),
+    protein_name: z.string(),
+    gene: z.string(),
+    tax_name: z.string(),
 
   }))
 
@@ -84,19 +92,26 @@ export const GlycanResponseNode = MetaNode.createData('GlycanResponseNode')
   .codec(GlycanResponse)
   .view(data => (
     <div>
-      <div>Glycan info:</div><br/>
-      <pre>
-      Glycan accession: {data.glytoucan.glytoucan_ac}<br/>
-      Glycan URL: {data.glytoucan.glytoucan_url}<br/><br/>
-      </pre>
-      <div>Species info:</div><br/>
-      {data.species.map((species, index)=> (
-        <pre>
+      <div>Glycan information from Glytoucan:
+        <a href={data.glytoucan.glytoucan_url} target='_blank'> {data.glytoucan.glytoucan_ac} </a>
+      </div><br/>
+      {data.species.map((species, species_index)=> (
+        <div key={species_index}>
           Species: {species.name}<br/>
           Common name: {species.common_name}<br/>
           Tax Id: {species.taxid}<br/>
-          Annotation category: {species.annotation_category}<br/><br/>
-        </pre>)
+          Annotation category: {species.annotation_category}<br/>
+          <div>Enzyme info:</div>
+          {data.enzyme.map((enzyme, enzyme_index)=>(
+            (enzyme.tax_name === species.name)
+              ? <div>&nbsp;&nbsp;&nbsp;&nbsp;
+                  <a href={enzyme.gene_link} target='_blank'>Gene: {enzyme.gene}</a><br/>&nbsp;&nbsp;&nbsp;&nbsp;
+                  Protein name: {enzyme.protein_name}<br/>&nbsp;&nbsp;&nbsp;&nbsp;
+                  Uniprot Canonical Accession: {enzyme.uniprot_canonical_ac}<br/>&nbsp;&nbsp;&nbsp;&nbsp;
+                </div>
+            : <div></div>
+          ))}
+        </div>)
       )}
     </div>
   ))
