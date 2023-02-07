@@ -1,7 +1,7 @@
 import React from 'react'
 import { MetaNode } from '@/spec/metanode'
 import { z } from 'zod'
-import { Gene, Drug, Primative, Metabolite } from '@/components/core/input/primitives'
+import { Gene, Drug, Primative, Metabolite, Glycan } from '@/components/core/input/primitives'
 import dynamic from 'next/dynamic'
 import { input_icon } from '@/icons'
 
@@ -26,6 +26,7 @@ const Term_T = (T: Primative) => MetaNode.createData(`Term[${T.name}]`)
 export const GeneTerm = Term_T(Gene)
 export const DrugTerm = Term_T(Drug)
 export const MetaboliteTerm = Term_T(Metabolite)
+export const GlycanTerm = Term_T(Glycan)
 
 
 const itemRenderer = (item: unknown, { modifiers: { active, disabled }, handleClick }: { modifiers: { active: boolean, disabled: boolean }, handleClick: React.MouseEventHandler }) => (
@@ -106,3 +107,4 @@ const Input_Term_T = (T: Primative, Term_T: typeof GeneTerm) => MetaNode.createP
 export const InputGeneTerm = Input_Term_T(Gene, GeneTerm)
 export const InputDrugTerm = Input_Term_T(Drug, DrugTerm)
 export const InputMetaboliteTerm = Input_Term_T(Metabolite, MetaboliteTerm)
+export const InputGlycanTerm = Input_Term_T(Glycan, GlycanTerm)

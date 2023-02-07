@@ -1,6 +1,6 @@
 import useSWRImmutable from 'swr/immutable'
 import levenSort from '@/utils/leven-sort'
-import { gene_icon, drug_icon } from '@/icons'
+import { gene_icon, drug_icon, glycan_icon } from '@/icons'
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
@@ -57,4 +57,22 @@ export const Metabolite = {
   },
 }
 
-export type Primative = typeof Gene | typeof Drug | typeof Metabolite
+function useGlytoucanSuggestions() {}
+
+export const Glycan = {
+  name: 'Glycan',
+  label: 'Glycan',
+  icon: [glycan_icon],
+  color: '#3477b3',
+  examples: {
+    term: 'G17689DH',
+    set: []
+  },
+  //TODO:
+  // autocomplete: {
+  //   term: useGlytoucanSuggestions,
+  // },
+}
+
+export type Primative = typeof Gene | typeof Drug | typeof Metabolite | typeof Glycan
+ 

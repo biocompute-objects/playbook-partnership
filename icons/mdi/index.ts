@@ -21,3 +21,4 @@ import { mdiProgressPencil } from '@mdi/js'; export const status_awaiting_input_
 import { mdiLink } from '@mdi/js'; export const share_icon = { path: mdiLink, title: 'Share' }
 import { mdiVariable } from '@mdi/js'; export const variable_icon = { path: mdiVariable, title: 'Variable' }
 import { mdiViewList } from '@mdi/js'; export const weighted_icon = { path: mdiViewList, title: 'Weighted' }
+import { mdiSquareWave } from '@mdi/js'; export const glycan_icon = { path: mdiSquareWave, title: 'Glycan'}
