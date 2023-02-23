@@ -1,24 +1,21 @@
-import '@blueprintjs/icons/lib/css/blueprint-icons.css'
-import '@blueprintjs/select/lib/css/blueprint-select.css'
-import '@blueprintjs/core/lib/css/blueprint.css'
-
 import React from 'react'
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import type { GetServerSidePropsContext } from 'next'
 import fpprg from '@/app/fpprg'
 import krg from '@/app/krg'
-import suggestiondb from '@/app/suggestionsdb'
+import db from '@/app/db'
 import { z } from 'zod'
 import * as dict from '@/utils/dict'
 import { useRouter } from 'next/router'
 import { SWRConfig } from 'swr'
-import type { Metapath } from '@/app/fragments/graph/types'
 import { MetaNode } from '@/spec/metanode'
+import { UserIdentity } from '@/app/fragments/graph/useridentity'
+import fetcher from '@/utils/next-rest-fetcher'
 
 const Header = dynamic(() => import('@/app/fragments/playbook/header'))
 const Footer = dynamic(() => import('@/app/fragments/playbook/footer'))
-const Graph = dynamic(() => import('@/app/fragments/graph/graph'), { ssr: false })
+const Graph = dynamic(() => import('@/app/fragments/graph/graph'))
 
 const ParamType = z.union([
   z.object({ graph_id: z.string(), node_id: z.string() }),
@@ -52,12 +49,12 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     const output = await fpprg.getResolved(result.process.id)
     if (output) fallback[`/api/db/process/${result.process.id}/output`] = output.toJSON().data
   }
-  const suggestions = await suggestiondb.suggestions()
+  const suggestions = await db.objects.suggestion.findMany()
   for (const key in suggestions) {
     const suggestion = suggestions[key]
     let OutputNode = krg.getDataNode(suggestion.output)
     if (OutputNode === undefined) {
-      OutputNode = MetaNode.createData(suggestion.output)
+      OutputNode = MetaNode(suggestion.output)
         .meta({
           label: suggestion.output,
           description: `A data type, suggested as part of ${suggestion.name}`,
@@ -71,7 +68,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     }
     let ProcessNode = krg.getProcessNode(suggestion.name)
     if (ProcessNode === undefined) {
-      const ProcessNode = MetaNode.createProcess(suggestion.name)
+      const ProcessNode = MetaNode(suggestion.name)
         .meta({
           label: suggestion.name,
           description: suggestion.description,
@@ -82,7 +79,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
             : {} as any)
         .output(OutputNode)
         .prompt((props) => {
-          return <div>This was suggested by {suggestion.author_name} &lt;{suggestion.author_email}&gt; ({suggestion.author_org})</div>
+          return <div>This was suggested by <UserIdentity user={suggestion.user} />.</div>
         })
         .build()
       krg.add(ProcessNode)
@@ -98,11 +95,6 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   }
 }
 
-async function fetcher(path: string): Promise<Array<Metapath>> {
-  const req = await fetch(path)
-  return await req.json()
-}
-
 export default function App({ fallback, extend, suggest }: { fallback: any, extend: boolean, suggest: boolean }) {
   const router = useRouter()
   const params = ParamType.parse(router.query)
@@ -114,7 +106,7 @@ export default function App({ fallback, extend, suggest }: { fallback: any, exte
         <title>Playbook</title>
       </Head>
 
-      <Header homepage="/graph" />
+      <Header />
 
       <SWRConfig value={{ fallback, fetcher }}>
         <main className="flex-grow container mx-auto py-4 flex flex-col">

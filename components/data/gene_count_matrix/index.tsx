@@ -5,10 +5,11 @@ import python from '@/utils/python'
 import { z } from 'zod'
 import { datafile_icon, file_transfer_icon } from '@/icons'
 import dynamic from 'next/dynamic'
+import { downloadUrl } from '@/utils/download'
 
 const Matrix = dynamic(() => import('@/app/components/Matrix'))
 
-export const GeneCountMatrix = MetaNode.createData('GeneCountMatrix')
+export const GeneCountMatrix = MetaNode('GeneCountMatrix')
   .meta({
     label: 'Gene Count Matrix',
     description: 'A gene count matrix file',
@@ -30,21 +31,22 @@ export const GeneCountMatrix = MetaNode.createData('GeneCountMatrix')
           columns={props.columns}
           values={props.values}
           ellipses={props.ellipses}
+          shape={props.shape}
+          downloads={{
+            'URL': () => downloadUrl(props.url)
+          }}
         />
-        <p>Shape: ({props.shape[0]}, {props.shape[1]})</p>
-        <a style={{ display: 'none' }} href={props.url}>{props.url}</a>
       </div>
     )
   })
   .build()
 
-export const GeneCountMatrixFromFile = MetaNode.createProcess('GeneCountMatrixFromFile')
+export const GeneCountMatrixFromFile = MetaNode('GeneCountMatrixFromFile')
   .meta({
     label: 'Resolve A Gene Count Matrix from a File',
     description: 'Ensure a file contains a gene count matrix, load it into a standard format',
     icon: [file_transfer_icon],
   })
-  .codec()
   .inputs({ file: FileURL })
   .output(GeneCountMatrix)
   .resolve(async (props) => await python(
@@ -53,12 +55,11 @@ export const GeneCountMatrixFromFile = MetaNode.createProcess('GeneCountMatrixFr
   ))
   .build()
 
-  export const Transpose = MetaNode.createProcess('Transpose')
+  export const Transpose = MetaNode('Transpose')
   .meta({
     label: 'Transpose',
     description: 'A demonstrative transpose operation',
   })
-  .codec()
   .inputs({ file: GeneCountMatrix })
   .output(GeneCountMatrix)
   .resolve(async (props) => await python(
