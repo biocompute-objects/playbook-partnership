@@ -42,7 +42,7 @@ Figure 2. The DRAFT suffix indicates the BCO is still under draft status. Once t
   
 - If a BCO already exists, go to the BioCompute Object DB icon at the top right or the [BioCompute DB Search](https://wiki.biocomputeobject.org/index.php?title=Search) card on the homepage to retrieve any drafts or published BCOs.
   
-- BCOs are organized into 8 top level "[Domains](https://wiki.biocomputeobject.org/index.php?title=Bco-domains)," into which all information is conceptually organized. One of the Domains is the "Extension Domain," which enables a user to extend the base standard out to other functions or standards.
+- BCOs are organized into 8 top level "[Domains](https://wiki.biocomputeobject.org/index.php?title=Bco-domains)" into which all information is conceptually organized. One of the Domains is the "Extension Domain," which enables a user to extend the base standard out to other functions or standards.
 
 - BioCompute Portal supports [prefix registration and permission control](https://wiki.biocomputeobject.org/index.php?title=Prefix_registration) which means organizations and individuals can register unique prefixes to organize BCOs more effectively. Owners of prefixes can manage personnel under the prefix group and permissions to each personnel.
 
