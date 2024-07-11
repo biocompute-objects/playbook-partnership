@@ -6,6 +6,7 @@ import {
 } from "@/components/service/mygeneinfo";
 import { z } from "zod";
 import { glygen_icon } from "@/icons";
+import { Table, Cell, Column } from "@/app/components/Table";
 import { ProteinTerm, GeneTerm } from "@/components/core/term";
 import { ProteinSet } from "@/components/core/set";
 import {
@@ -14,6 +15,8 @@ import {
   GlyGenProteinResponseArray,
   GlycosylationData,
   PhosphorylationData,
+  UniprotAPIResponse,
+  UniprotAPIResponses,
 } from "./data_models";
 import {
   get_single_protein_data,
@@ -21,6 +24,7 @@ import {
   extract_specific_data,
   glycosylation_check,
   phosphorylation_check,
+  get_uniprot_nucleus_proteins,
 } from "./sup_functions";
 import { GlycosylationTable, PhosphorylationTable } from "./sup_components";
 
@@ -247,6 +251,7 @@ export const GlycosylationViewResponseNode = MetaNode(
   })
   .build();
 
+// Phosphorylation data metanode
 export const PhosphorylationViewResponseNode = MetaNode(
   "PhosphorylationViewResponseNode",
 )
@@ -276,6 +281,7 @@ export const PhosphorylationViewResponseNode = MetaNode(
   })
   .build();
 
+// SNV data metanode
 export const SNVViewResponseNode = MetaNode("SNVViewResponseNode")
   .meta({
     label: "SNV Information",
@@ -359,6 +365,33 @@ export const SNVViewResponseNode = MetaNode("SNVViewResponseNode")
   })
   .build();
 
+// Nucleus subcellular protein data metanode
+export const NucleusProteinSetDataNode = MetaNode("NucleusProteinSet")
+  .meta({
+    label: "Nucleus Protein Set",
+    description: "Nucleus Proteins",
+    icon: [glygen_icon],
+  })
+  .codec(UniprotAPIResponses)
+  .view((data) => {
+    const accessions = data.map((item) => item.accession);
+    return (
+      <Table
+        height={500}
+        cellRendererDependencies={accessions}
+        numRows={accessions.length}
+        enableGhostCells
+        enableFocusedCell
+      >
+        <Column
+          name="Accessions"
+          cellRenderer={(row) => <Cell key={row + ""}>{accessions[row]}</Cell>}
+        />
+      </Table>
+    );
+  })
+  .build();
+
 // --- PROCESS METANODES --- //
 
 // Individual protein process metanode
@@ -428,7 +461,8 @@ export const GlycosylationInformation = MetaNode("GlycosylationInformation")
     return data;
   })
   .story((props) => ({
-    abstract: "The glycosylation data was extracted from the GlyGen protein response and prepared for presentation in the view metanode.",
+    abstract:
+      "The glycosylation data was extracted from the GlyGen protein response and prepared for presentation in the view metanode.",
   }))
   .build();
 
@@ -453,7 +487,8 @@ export const PhosphorylationInformation = MetaNode("PhosphorylationInformation")
     return data;
   })
   .story((props) => ({
-    abstract: "The phosphorylation data was extracted from the GlyGen protein response and prepared for presentation in the view metanode.",
+    abstract:
+      "The phosphorylation data was extracted from the GlyGen protein response and prepared for presentation in the view metanode.",
   }))
   .build();
 
@@ -477,7 +512,10 @@ export const SNVInformation = MetaNode("SNVInformation")
     console.log(results);
     return results;
   })
-  .story((props) => "The SNV data is parsed from the GlyGen Protein data and prepared for presentation in the data view metanode.")
+  .story(
+    (props) =>
+      "The SNV data is parsed from the GlyGen Protein data and prepared for presentation in the data view metanode.",
+  )
   .build();
 
 // Links the Protein metanode chains to the Gene process metanodes
@@ -493,5 +531,51 @@ export const ProteinLink = MetaNode("ProteinLinkMetanode")
     const geneName = props.inputs.glyGenProteinResponse.gene.name;
     return geneName;
   })
-  .story((props) => "The gene name was extracted from the protein response data in order to further explore the gene data.")
+  .story(
+    (props) =>
+      "The gene name was extracted from the protein response data in order to further explore the gene data.",
+  )
+  .build();
+
+// Nucleus subcellular protein process metanode
+export const NucleusProteinSet = MetaNode("NucleusProteinSet")
+  .meta({
+    label: "Filter Nucleus Proteins",
+    description: "Nucleus Proteins",
+    icon: [glygen_icon],
+    pagerank: 2,
+  })
+  .inputs({ glyGenProteinSetResponse: GlyGenProteinSetResponseNode })
+  .output(NucleusProteinSetDataNode)
+  .resolve(async (props) => {
+    const accessions = props.inputs.glyGenProteinSetResponse.map(
+      (item) => item.uniprot.uniprot_canonical_ac,
+    );
+    const results = await get_uniprot_nucleus_proteins(accessions);
+    console.log(results);
+    return results;
+  })
+  .story((props) => "TODO")
+  .build();
+
+// Continue from nucleus protein set filter metanode
+export const NucleusProteinIsolation = MetaNode("NucleusProteins")
+  .meta({
+    label: "Isolate Nucleus Proteins",
+    description: "Isolate Nucleus Proteins",
+    icon: [glygen_icon],
+    pagerank: 2,
+  })
+  .inputs({ nucleusProteins: NucleusProteinSetDataNode })
+  .output(ProteinSet)
+  .resolve(async (props) => {
+    const accessions = props.inputs.nucleusProteins.map(
+      (item) => item.accession,
+    );
+    return {
+      description: "Isolated Nucleus Proteins",
+      set: accessions,
+    };
+  })
+  .story((props) => "TODO")
   .build();
