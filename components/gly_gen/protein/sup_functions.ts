@@ -7,7 +7,11 @@ import {
   GlycosylationAPIResponse,
   GlycosylationData,
   PhosphorylationAPIResponse,
-  PhosphorylationData
+  PhosphorylationData,
+  SubCellularLocationEntry,
+  CommentEntry,
+  UniprotAPIResponse,
+  UniprotAPIResponses,
 } from "./data_models";
 
 // Infer the Typescript type from the Zod schemas
@@ -20,6 +24,10 @@ type PhosphorylationDataType = z.infer<typeof PhosphorylationData>;
 type PhosphorylationAPIResponseType = z.infer<
   typeof PhosphorylationAPIResponse
 >;
+type UniprotAPIResponseType = z.infer<typeof UniprotAPIResponse>;
+type UniprotAPIResponsesType = z.infer<typeof UniprotAPIResponses>;
+type SubCellularLocationEntryType = z.infer<typeof SubCellularLocationEntry>;
+type CommentEntryType = z.infer<typeof CommentEntry>;
 
 export async function get_single_protein_data(
   accession: String,
@@ -48,7 +56,7 @@ export async function get_single_protein_data(
   // from the user)
   if (!detail_response.ok) {
     throw new Error(
-      `Protein detail failed with status: ${detail_response.status} ${detail_response.statusText}`,
+      `Protein detail failed with status: ${detail_response.status}, ${detail_response.statusText}`,
     );
   }
 
@@ -150,6 +158,7 @@ export async function get_protein_set_data(accessions: Array<String>) {
   }
   const search_query_result = await search_query_response.json();
   const list_id = search_query_result.list_id;
+  console.log(`==> list_id: ${list_id}`);
 
   // search params for protein list endpoint
   const list_query = new URLSearchParams();
@@ -212,22 +221,25 @@ export async function get_protein_set_data(accessions: Array<String>) {
   return return_data;
 }
 
-export function extract_specific_data(data: GlyGenProteinResponseType, key: String): GlycosylationDataType | PhosphorylationDataType {
-  /* Takes the full protein response and extracts specific data such as the 
-   * glycosylation or phosphorylation data. 
+export function extract_specific_data(
+  data: GlyGenProteinResponseType,
+  key: String,
+): GlycosylationDataType | PhosphorylationDataType {
+  /* Takes the full protein response and extracts specific data such as the
+   * glycosylation or phosphorylation data.
    *
-   * data: the full protein detail API response. 
+   * data: the full protein detail API response.
    * key: the data key to extract (accepts glycosylation or phosphorylation).
    *
-   * Returns: the extracted object. 
+   * Returns: the extracted object.
    */
-  
+
   if (key.toLowerCase().trim() === "glycosylation") {
     return data.glycoprotein;
   } else if (key.toLowerCase().trim() === "phosphorylation") {
     return data.phosphorylation;
   } else {
-    throw new Error("Invalid key type to extract_specific_data.")
+    throw new Error("Invalid key type to extract_specific_data.");
   }
 }
 
@@ -237,6 +249,49 @@ export function glycosylation_check(data: any): data is GlycosylationDataType {
   return (data as GlycosylationDataType).glycosylation !== undefined;
 }
 
-export function phosphorylation_check(data: any): data is PhosphorylationDataType {
+export function phosphorylation_check(
+  data: any,
+): data is PhosphorylationDataType {
   return (data as PhosphorylationDataType).phosphorylation !== undefined;
+}
+
+export async function get_uniprot_nucleus_proteins(
+  accessions: Array<String>,
+): Promise<UniprotAPIResponsesType> {
+  // API endpoint for the uniprot EBI protein endpoint
+  const uniprot_api_endpoint = "https://www.ebi.ac.uk/proteins/api/proteins/";
+  const formatted_responses: Array<UniprotAPIResponseType> = [];
+
+  // Hit the uniprot endpoint and get the protein details
+  for (let accession of accessions) {
+    if (accession.includes("-")) {
+      accession = accession.split("-")[0];
+    }
+    const detail_response = await fetch(`${uniprot_api_endpoint}${accession}`, {
+      method: "GET",
+      headers: { accept: "application/json" },
+    });
+    if (!detail_response.ok) {
+      console.log(`Non-200 response code: ${detail_response.status}`);
+      continue;
+    }
+
+    const entry = await detail_response.json();
+
+    const hasNucleusLocation = entry.comments?.some(
+      (comment: CommentEntryType) =>
+        comment.type === "SUBCELLULAR_LOCATION" &&
+        comment.locations?.some(
+          (loc: SubCellularLocationEntryType) =>
+            loc.location.value.toLowerCase().trim() === "nucleus",
+        ),
+    );
+
+    if (hasNucleusLocation) {
+      const parsedEntry = UniprotAPIResponse.parse(entry);
+      formatted_responses.push(parsedEntry);
+    }
+  }
+
+  return formatted_responses;
 }
