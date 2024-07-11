@@ -118,7 +118,7 @@ export const GlyGenProteinResponse = z
     section_stats: SectionStatsArray,
   })
   .strip();
-export const GlyGenProteinResponseArray = z.array(GlyGenProteinResponse)
+export const GlyGenProteinResponseArray = z.array(GlyGenProteinResponse);
 
 // Formatted GlyGen protein set response data model
 export const GlyGenProteinSetResponse = z.array(
@@ -176,3 +176,26 @@ export const PhosphorylationAPIResponse = z
     comment: z.string().optional(),
   })
   .partial();
+
+// -- Data Models for EBI Uniprot Accession Endpoint -- //
+
+// Supplementary models for the comments key
+export const SubCellularLocationEntry = z.object({
+  location: z.object({
+    value: z.string(),
+  }),
+});
+
+export const CommentEntry = z.object({
+  type: z.string(),
+  locations: z.array(SubCellularLocationEntry).optional(),
+});
+
+// Model for the EBI accession endpoint
+export const UniprotAPIResponse = z.object({
+  accession: z.string(),
+  id: z.string(),
+  comments: z.array(CommentEntry),
+});
+
+export const UniprotAPIResponses = z.array(UniprotAPIResponse);
