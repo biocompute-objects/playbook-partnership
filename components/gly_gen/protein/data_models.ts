@@ -25,6 +25,7 @@ const PhosphorylationEntry = z.object({
   kinase_uniprot_canonical_ac: z.string().optional(),
   kinase_gene_name: z.string().optional(),
   residue: z.string(),
+  site_lbl: z.string(),
   comment: z.string().optional(),
 });
 
@@ -173,6 +174,7 @@ export const PhosphorylationAPIResponse = z
     kinase_uniprot_canonical_ac: z.string().optional(),
     kinase_gene_name: z.string().optional(),
     residue: z.string().optional(),
+    site_lbl: z.string().optional(),
     comment: z.string().optional(),
   })
   .partial();

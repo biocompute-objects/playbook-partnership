@@ -79,7 +79,7 @@ export function PhosphorylationTable({
         <tbody>
           {phosphorylation_data.map((entry, index) => (
             <tr key={index}>
-              <td>{entry.residue}</td>
+              <td>{entry.site_lbl}</td>
               <td>{entry.kinase_uniprot_canonical_ac}</td>
               <td>{entry.kinase_gene_name}</td>
               <td>{entry.comment}</td>
