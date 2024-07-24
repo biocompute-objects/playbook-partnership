@@ -102,6 +102,7 @@ export async function get_single_protein_data(
             tag.kinase_uniprot_canonical_ac || "No data available",
           kinase_gene_name: tag.kinase_gene_name || "No data available",
           residue: tag.residue || "No data available",
+          site_lbl: tag.site_lbl || "No data available",
           comment: tag.comment || "No data available",
         }),
       )
