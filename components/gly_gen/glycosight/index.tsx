@@ -88,7 +88,7 @@ export const GlycoSightFileURLNode = MetaNode("GlycoSightURL")
 export const GlycoSightProcessNode = MetaNode("GlycoSightProcessNode")
     .meta({
         label: `Launch GlycoSight Analysis`,
-        description: `Run GlycoSight Analysis on MZID file(s)`,
+        description: `Run GlycoSight Analysis on either an MZID (*.mzid.gz) or file(s) (*tar.gz or *.tgz)`,
         icon: [glygen_icon],
     })
     .inputs({ file: GlycoSightFileURLNode })
@@ -106,21 +106,39 @@ export const GlycoSightProcessNode = MetaNode("GlycoSightProcessNode")
       
       return result;
     })
-    .story((props) => {return "The N-Linked glycan sites analysis was launched through the GlycoSight servers"})
+    .story((props) => {return {
+      abstract: "The N-Linked glycan sites analysis was launched through the GlycoSight servers.",
+      introduction: `GlycoSight parses peptide identification results, in mzIdentML format, 
+      to find putative N-glycosylation sites. The analyzed sample must have been prepared 
+      with PNGase-F, an enzyme which cleaves N-glycans from the Asn amino-acid and deamidates it, 
+      and changes the molecular weight of the Asn residue by +0.98. The output 
+      table provides the UniProt accession, the amino-acid position of the Asn exibiting deamidation, 
+      the number of tandem mass spectra which show deamidation of the residue, the number of distinct 
+      peptide sequences which show deamindation of the residue, and the peptide sequences themselves. 
+      Peptide sequences are separated by a comma, and the corresponding Asn residue shown in lowercase.`,
+      methods: `First, peptides were identified and mapped to UniProt Accession ID numbers. 
+      The peptides were then analyzed for the mass shift of +0.98, indicative of deglycosylation following 
+      treatment with the enzyme PNGase-F.`,
+      results: `A table listing identified peptide signatures, or a comma-separated list of peptide 
+      signatures, UniProt Protein Accession IDs, associated amino acid position, spectral count, 
+      and distinct peptide counts for each analyzed peptide signature. Putative N-glycosylation sites are 
+      annotated with lower-case "n" to represent the deamidated asparagine (Asn) residue.`,
+    }
+      })
     .build()
 
 export const GlycoSightFileUpload = MetaNode("GlycoSightUpload")
     .meta({
         label: "Upload GlycoSight MZID",
-        description: "Upload MZID data for peptide-to-Uniprot sample mapping",
+        description: `Upload MZID data for peptide-to-Uniprot sample mapping. 
+        Single files (*mzid.gz) or mulitple files (as an archive, *tar.gz or *.tgz) are accepted.`,
         icon: [glygen_icon],
     })
     .codec(FileC)
     .inputs() 
     .output(GlycoSightFileURLNode)
     .prompt(props => <>
-        {/* XXX: <FilePrompt {...props} /> */}
-        TODO: <FilePrompt {...props} example={clientLoadExample} />
+        <FilePrompt {...props} example={clientLoadExample} />
         {props.output ? 
             <SafeRender 
                 component={FileURL.view} 
@@ -129,7 +147,10 @@ export const GlycoSightFileUpload = MetaNode("GlycoSightUpload")
             null}</>
         )
         .resolve(async (props) => props.data)
-        .story((props) => { return "Upload MZID glycosylation data for N-linked glycan analysis" })
+        .story((props) => { return {
+          abstract: "MZID glycosylation data for N-linked glycan analysis was uploaded.",
+          }
+        })
         .build()
 
 
