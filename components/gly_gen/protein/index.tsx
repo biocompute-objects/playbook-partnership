@@ -30,7 +30,7 @@ import {
 import {
   GlycosylationTable,
   PhosphorylationTable,
-  DiseaseTable,
+  DiseaseAssociation,
 } from "./sup_components";
 
 // --- DATA METANODES --- //
@@ -90,9 +90,18 @@ export const GlyGenProteinResponseNode = MetaNode("GlyGenProteinResponse")
         <div>
           Glycoprotein: {data.glycoprotein.glycosylation ? "True" : "False"}
         </div>
-        <br />
         <div>
-          {data.disease && <DiseaseTable disease_info={data.disease} />}
+          {data.disease && data.disease.length > 0 && (
+            <>
+              Disease Association(s):{" "}
+              {data.disease.map((entry, index) => (
+                <React.Fragment key={entry.disease_id}>
+                  {index > 0 && ", "}
+                  <DiseaseAssociation disease_info={entry} />
+                </React.Fragment>
+              ))}
+            </>
+          )}
         </div>
         <br />
         <div>

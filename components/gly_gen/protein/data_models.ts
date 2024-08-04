@@ -87,7 +87,7 @@ const SNVEntry = z.object({
 const SNVArray = z.array(SNVEntry);
 
 // Disease association data model
-const DiseaseEntry = z.object({
+export const DiseaseEntry = z.object({
   disease_id: z.string(),
   recommended_name: z.object({
     id: z.string(),

@@ -3,48 +3,33 @@ import { glygen_icon } from "@/icons";
 import {
   GlycosylationArray,
   PhosphorylationArray,
-  DiseaseArray,
+  DiseaseEntry,
 } from "./data_models";
 import { z } from "zod";
 
 // Infer the Typescript type from the Zod schemas
-type DiseaseArrayType = z.infer<typeof DiseaseArray>;
+type DiseaseEntryType = z.infer<typeof DiseaseEntry>;
 type GlycosylationArrayType = z.infer<typeof GlycosylationArray>;
 type PhosphorylationArrayType = z.infer<typeof PhosphorylationArray>;
 
-export function DiseaseTable({
+export function DiseaseAssociation({
   disease_info,
 }: {
-  disease_info: DiseaseArrayType;
+  disease_info: DiseaseEntryType;
 }) {
   return (
-    <div className="prose max-w-none">
-      <table>
-        <thead>
-          <tr>
-            <th>Disease ID</th>
-            <th>Name</th>
-          </tr>
-        </thead>
-        <tbody>
-          {disease_info.map((entry, index) => (
-            <tr key={index}>
-              <td>
-                <a
-                  href={entry.recommended_name.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: "blue" }}
-                >
-                  {entry.disease_id}
-                </a>
-              </td>
-              <td>{entry.recommended_name.name}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <span>
+      {disease_info.recommended_name.name} [
+      <a
+        href={disease_info.recommended_name.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ color: "blue" }}
+      >
+        {disease_info.disease_id}
+      </a>
+      ]
+    </span>
   );
 }
 
