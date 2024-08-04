@@ -1,11 +1,52 @@
 import React from "react";
 import { glygen_icon } from "@/icons";
-import { GlycosylationArray, PhosphorylationArray } from "./data_models";
+import {
+  GlycosylationArray,
+  PhosphorylationArray,
+  DiseaseArray,
+} from "./data_models";
 import { z } from "zod";
 
 // Infer the Typescript type from the Zod schemas
+type DiseaseArrayType = z.infer<typeof DiseaseArray>;
 type GlycosylationArrayType = z.infer<typeof GlycosylationArray>;
 type PhosphorylationArrayType = z.infer<typeof PhosphorylationArray>;
+
+export function DiseaseTable({
+  disease_info,
+}: {
+  disease_info: DiseaseArrayType;
+}) {
+  return (
+    <div className="prose max-w-none">
+      <table>
+        <thead>
+          <tr>
+            <th>Disease ID</th>
+            <th>Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          {disease_info.map((entry, index) => (
+            <tr key={index}>
+              <td>
+                <a
+                  href={entry.recommended_name.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "blue" }}
+                >
+                  {entry.disease_id}
+                </a>
+              </td>
+              <td>{entry.recommended_name.name}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
 export function GlycosylationTable({
   glycosylation_data,
@@ -88,9 +129,9 @@ export function PhosphorylationTable({
         </tbody>
       </table>
       {is_preview && (
-      <div style={{marginTop: "10px", fontSynthesis: "italic"}}>
+        <div style={{ marginTop: "10px", fontSynthesis: "italic" }}>
           *This is a preview of the full phosphorylation data table.
-      </div>
+        </div>
       )}
     </div>
   );

@@ -86,6 +86,27 @@ const SNVEntry = z.object({
 });
 const SNVArray = z.array(SNVEntry);
 
+// Disease association data model
+const DiseaseEntry = z.object({
+  disease_id: z.string(),
+  recommended_name: z.object({
+    id: z.string(),
+    resource: z.string(),
+    url: z.string(),
+    name: z.string(),
+    description: z.string(),
+  }),
+  synonyms: z.array(
+    z.object({
+      id: z.string(),
+      resource: z.string(),
+      url: z.string(),
+      name: z.string(),
+    }),
+  ),
+});
+export const DiseaseArray = z.array(DiseaseEntry);
+
 // --- Main Protein Data Models --- //
 
 // Formatted GlyGen protein response data model
@@ -117,6 +138,7 @@ export const GlyGenProteinResponse = z
     glycoprotein: GlycosylationData,
     phosphorylation: PhosphorylationData,
     section_stats: SectionStatsArray,
+    disease: DiseaseArray.optional(),
   })
   .strip();
 export const GlyGenProteinResponseArray = z.array(GlyGenProteinResponse);

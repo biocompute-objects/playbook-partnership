@@ -17,6 +17,7 @@ import {
   PhosphorylationData,
   UniprotAPIResponse,
   UniprotAPIResponses,
+  DiseaseArray,
 } from "./data_models";
 import {
   get_single_protein_data,
@@ -26,7 +27,11 @@ import {
   phosphorylation_check,
   get_uniprot_nucleus_proteins,
 } from "./sup_functions";
-import { GlycosylationTable, PhosphorylationTable } from "./sup_components";
+import {
+  GlycosylationTable,
+  PhosphorylationTable,
+  DiseaseTable,
+} from "./sup_components";
 
 // --- DATA METANODES --- //
 
@@ -84,6 +89,10 @@ export const GlyGenProteinResponseNode = MetaNode("GlyGenProteinResponse")
         </div>
         <div>
           Glycoprotein: {data.glycoprotein.glycosylation ? "True" : "False"}
+        </div>
+        <br />
+        <div>
+          {data.disease && <DiseaseTable disease_info={data.disease} />}
         </div>
         <br />
         <div>

@@ -112,6 +112,8 @@ export async function get_single_protein_data(
     phosphorylation_data: phosphorylation_data,
   };
 
+  // handle disease association
+
   const validated_data = GlyGenProteinResponse.parse(return_data);
 
   return validated_data;
