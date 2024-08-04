@@ -429,7 +429,7 @@ export const GlyGenProtein = MetaNode("GGP")
     return protein_response;
   })
   .story((props) => ({
-    abstract: `Next, the GlyGen database\\ref{doi:10.1093/glycob/cwz080} was searched to identify a relevant set of proteins that originate from.`,
+    abstract: `Next, the GlyGen database \\ref{doi:10.1093/glycob/cwz080} was searched to identify a relevant protein that originates from ${props.inputs?.protein_uniprot_canonical_ac ? props.inputs.protein_uniprot_canonical_ac : "the protein accession"}.`,
   }))
   .build();
 
@@ -454,7 +454,7 @@ export const GlyGenProteinSet = MetaNode("GGPS")
     return protein_response;
   })
   .story((props) => ({
-    abstract: `Next, the GlyGen database\\ref{doi:10.1093/glycob/cwz080} was searched to identify a relevant set of proteins that originate from.`,
+    abstract: `Next, the GlyGen database \\ref{doi:10.1093/glycob/cwz080} was searched to identify a relevant set of proteins that originate from ${props.inputs?.protein_uniprot_canonical_acs.set ? props.inputs.protein_uniprot_canonical_acs.set : "the protein accessions"}.`,
   }))
   .build();
 
@@ -479,8 +479,11 @@ export const GlycosylationInformation = MetaNode("GlycosylationInformation")
     return data;
   })
   .story((props) => ({
-    abstract:
-      "The glycosylation data was extracted from the GlyGen protein response and prepared for presentation in the view metanode.",
+    abstract: `The glycosylation data was extracted from the GlyGen protein response (originating from ${props.inputs?.glygenProteinResponse.protein_names.name ? props.inputs.glygenProteinResponse.protein_names.name : "the protein accession"}) and prepared for presentation in the view metanode.`,
+    introduction:
+      "If a protein is a glycoprotein, glycosylation information such as residue (amino acid + site position), glycosylation site category, glycosylation type and GlyTouCan accession is shown.",
+    methods:
+      "A search was performed to identify the glycosylation information in GlyGen \\ref{doi:10.1093/glycob/cwz080} for given proteins.",
   }))
   .build();
 
@@ -505,8 +508,11 @@ export const PhosphorylationInformation = MetaNode("PhosphorylationInformation")
     return data;
   })
   .story((props) => ({
-    abstract:
-      "The phosphorylation data was extracted from the GlyGen protein response and prepared for presentation in the view metanode.",
+    abstract: `The phosphorylation data was extracted from the GlyGen protein response (originating from ${props.inputs?.glyGenProteinResponse.protein_names.name ? props.inputs.glyGenProteinResponse.protein_names.name : "the protein accession"}) and prepared for presentation in the view metanode.`,
+    introduction:
+      "If a protein is a phosphoprotein, phosphorylation information such as residue (amino acid + site position), Protein name and Gene name of  Kinase phosphorylating the protein and associated notes is shown.",
+    methods:
+      "A search was performed to identify the phosphorylation information in GlyGen \\ref{doi:10.1093/glycob/cwz080} for given proteins.",
   }))
   .build();
 
@@ -530,10 +536,14 @@ export const SNVInformation = MetaNode("SNVInformation")
     console.log(results);
     return results;
   })
-  .story(
-    (props) =>
+  .story((props) => ({
+    abstract:
       "The SNV data is parsed from the GlyGen Protein data and prepared for presentation in the data view metanode.",
-  )
+    introduction:
+      "Single Nucleotide Variation (SNV) information contains somatic and germline vartiation information observed in a protein. The SNV information consists of Genomic Locus, Ref Nucleotide, Alt Nucleotide, Start Pos, End Pos, Sequence, Disease and Keywords (somatic or germline)",
+    methods:
+      "A search was performed to identify the SNV information in GlyGen \\ref{doi:10.1093/glycob/cwz080} for given proteins.",
+  }))
   .build();
 
 // Links the Protein metanode chains to the Gene process metanodes
@@ -549,10 +559,14 @@ export const ProteinLink = MetaNode("ProteinLinkMetanode")
     const geneName = props.inputs.glyGenProteinResponse.gene.name;
     return geneName;
   })
-  .story(
-    (props) =>
+  .story((props) => ({
+    abstract:
       "The gene name was extracted from the protein response data in order to further explore the gene data.",
-  )
+    introduction:
+      "Protein UniProtKB accession is mapped to a Gene name for exploration of gene information.",
+    methods:
+      "A search was performed to identify the gene information for given proteins in GlyGen \\ref{doi:10.1093/glycob/cwz080}.",
+  }))
   .build();
 
 // Nucleus subcellular protein process metanode

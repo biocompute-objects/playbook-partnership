@@ -6,11 +6,7 @@ import {
 } from "@/components/service/mygeneinfo";
 import { z } from "zod";
 import { glygen_icon } from "@/icons";
-import {
-  GeneTerm,
-  ProteinTerm,
-  GlycanTerm,
-} from "@/components/core/term";
+import { GeneTerm, ProteinTerm, GlycanTerm } from "@/components/core/term";
 import { GlyGenProteinResponseNode } from "../protein";
 import { filter_glygen_proteins } from "./sup_functions";
 
@@ -31,7 +27,11 @@ export const GlyGenProteinProduct = MetaNode("GGPP")
     return filter_glygen_proteins(props.inputs.gene.symbol);
   })
   .story((props) => ({
-    abstract: `Next, the GlyGen database\\ref{doi:10.1093/glycob/cwz080} was searched to identify a relevant set of proteins that originate from ${props.inputs?.gene?.symbol ? props.inputs.gene.symbol : "the gene"}.`,
+    abstract: `The GlyGen database \\ref{doi:10.1093/glycob/cwz080} was searched to identify a relevant set of proteins that originate from ${props.inputs?.gene?.symbol ? props.inputs.gene.symbol : "the gene"}.`,
+    introduction:
+      "GlyGen provides information about proteins translated from genes. Proteins are identified through their UniProtKB accession and information such as its name, length, organism, gene location and whether it is a glycoprotein or a phosphoprotein is shown.",
+    methods:
+      "A protein search was performed for each gene name of interest using the GlyGen database \ref{doi:10.1093/glycob/cwz080}. The relevant set of proteins returned by the search was recorded. ",
   }))
   .build();
 
@@ -50,6 +50,10 @@ export const GlyGenProteinInformation = MetaNode("GlyGenProteinInformation")
     return await GlyGenProteinProduct.resolve({ ...props, inputs: { gene } });
   })
   .story((props) => ({
-    abstract: `The GlyGen database\\ref{doi:10.1093/glycob/cwz080} was searched to identify a relevant set of protein products that originate from ${props.inputs?.gene ? props.inputs.gene : "the gene"}.`,
+    abstract: `The GlyGen database \\ref{doi:10.1093/glycob/cwz080} was searched to identify a relevant set of protein products that originate from ${props.inputs?.gene ? props.inputs.gene : "the gene"}.`,
+    introduction:
+      "GlyGen provides information about proteins translated from genes. Proteins are identified through their UniProtKB accession and information such as its name, length, organism, gene location and whether it is a glycoprotein or a phosphoprotein is shown.",
+    methods:
+      "A protein search was performed for each gene name of interest using the GlyGen database \\ref{doi:10.1093/glycob/cwz080}. The relevant set of proteins returned by the search was recorded. ",
   }))
   .build();
