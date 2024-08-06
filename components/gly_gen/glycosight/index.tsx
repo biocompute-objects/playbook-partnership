@@ -88,7 +88,7 @@ export const GlycoSightFileURLNode = MetaNode("GlycoSightURL")
 export const GlycoSightProcessNode = MetaNode("GlycoSightProcessNode")
     .meta({
         label: `Launch GlycoSight Analysis`,
-        description: `Run GlycoSight Analysis on either an MZID (*.mzid.gz) or file(s) (*tar.gz or *.tgz)`,
+        description: `Run GlycoSight Analysis on one of: an MZID XML file (*.mzid), an MZID archive (*.mzid.gz) or file(s) (*tar.gz or *.tgz)`,
         icon: [glygen_icon],
     })
     .inputs({ file: GlycoSightFileURLNode })
