@@ -88,7 +88,9 @@ export const GlycoSightFileURLNode = MetaNode("GlycoSightURL")
 export const GlycoSightProcessNode = MetaNode("GlycoSightProcessNode")
     .meta({
         label: `Launch GlycoSight Analysis`,
-        description: `Run GlycoSight Analysis on one of: an MZID XML file (*.mzid), an MZID archive (*.mzid.gz) or file(s) (*tar.gz or *.tgz)`,
+        description: `Run GlycoSight Analysis on one of: an MZID XML file (*.mzid), an MZID archive (*.mzid.gz)
+         or file(s) as an archive (*tar.gz or *.tgz). There is a file size limit of approximately 18 MB; we
+          expect this limit to be resolved no later than September 2024.`,
         icon: [glygen_icon],
     })
     .inputs({ file: GlycoSightFileURLNode })
